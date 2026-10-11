@@ -2,129 +2,698 @@
 
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta content="Interpretability research stream of the DetectGPT project." name="description"/>
-<title>Interpretability | DETECTGPT</title>
-<link href="Images/favicon.svg" rel="icon" type="image/svg+xml"/>
-<link href="css/style.css" rel="stylesheet"/>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta
+        content="Interpretability research stream of the DetectGPT project, investigating rationale-based machine-generated text detection."
+        name="description"
+    />
+    <title>Interpretability | DETECTGPT</title>
+
+    <link href="Images/favicon.svg" rel="icon" type="image/svg+xml"/>
+    <link href="css/style.css" rel="stylesheet"/>
 </head>
-<body>
+
+<body class="interpretability-page">
+
 <div aria-hidden="true" class="background-animation"></div>
-<nav aria-label="Main navigation" id="main-nav"><div class="nav-container"><a class="nav-logo" href="index.html"><img class="brand-mark" src="Images/favicon.svg" alt="" aria-hidden="true"/><span>DETECTGPT</span></a><ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="statistical.html">Statistical</a></li><li><a aria-current="page" href="interpretability.html">Interpretability</a></li><li><a href="multilingual.html">Multilingual</a></li><li><a href="resources.html">Resources</a></li></ul></div></nav>
+
+<nav aria-label="Main navigation" id="main-nav">
+    <div class="nav-container">
+        <a class="nav-logo" href="index.html">
+            <img
+                class="brand-mark"
+                src="Images/favicon.svg"
+                alt=""
+                aria-hidden="true"
+            />
+            <span>DETECTGPT</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="statistical.html">Statistical</a></li>
+            <li>
+                <a aria-current="page" href="interpretability.html">
+                    Interpretability
+                </a>
+            </li>
+            <li><a href="multilingual.html">Multilingual</a></li>
+            <li><a href="resources.html">Resources</a></li>
+        </ul>
+    </div>
+</nav>
+
+
 <header class="page-hero">
-<div class="page-hero-content">
-<p class="page-kicker">Murema Manganyi</p>
-<h1 class="page-title">Interpretability</h1>
-<p class="page-subtitle">Rationale-based detection: retaining strong classification performance while exposing the evidence behind a prediction.</p>
-</div>
+    <div class="page-hero-content">
+        <p class="page-kicker">Murema Manganyi</p>
+
+        <h1 class="page-title">Interpretability</h1>
+
+        <p class="page-subtitle">
+            Making the evidence behind a machine-generated text prediction
+            visible, and testing whether that evidence is actually useful.
+        </p>
+    </div>
 </header>
 
+
 <main class="article-shell">
-<section class="content-section" id="aim">
-<div class="section-container">
-<div class="section-header"><h2 class="section-title">Aim</h2></div>
-<div class="article-copy">
-<p class="research-question">Can a rationale-based classifier retain detection performance relative to a matched full-context classifier while exposing evidence that matters to its prediction, and does showing that evidence help human evaluators judge authorship?</p>
-</div>
-</div>
-</section>
-<section class="content-section alt-bg" id="method">
-<div class="section-container">
-<div class="section-header"><h2 class="section-title">Method</h2></div>
-<div class="article-copy">
-<p>The study uses 8,160 balanced English passages, with 4,080 human-written and 4,080 machine-generated passages spanning abstracts, books, news and poetry. The data is split into 5,760 training, 1,200 validation and 1,200 test passages.</p>
-<p>The main comparison is between a full-context BiLSTM and a rationale BiLSTM. The rationale model first selects a restricted subset of tokens and then predicts from those selected tokens. TF-IDF and Transformer models provide additional comparisons.</p>
-<div class="data-table-wrap">
-<table>
-<thead><tr><th>Split</th><th>Passages</th></tr></thead>
-<tbody><tr><td>Training</td><td>5,760</td></tr><tr><td>Validation</td><td>1,200</td></tr><tr><td>Test</td><td>1,200</td></tr></tbody>
-</table>
-</div>
-</div>
-<figure class="figure-block">
-<img alt="Rationale selector and predictor architecture" src="Images/interpretability-architecture.png"/>
-<figcaption>Rationale-model architecture. The selector controls which tokens remain visible before the predictor classifies the passage.</figcaption>
-</figure>
-</div>
-</section>
-<section class="content-section" id="results">
-<div class="section-container">
-<div class="section-header"><h2 class="section-title">Results</h2></div>
-<div class="article-copy">
-<h3>Detection performance</h3>
-<p>The rationale BiLSTM used about 40% of the visible text and remained close to the matched full-context BiLSTM. The difference in F1 was 0.97 percentage points.</p>
-<div class="data-table-wrap">
-<table>
-<thead><tr><th>Model</th><th>F1</th><th>AUROC</th></tr></thead>
-<tbody>
-<tr><td>TF-IDF</td><td>94.9%</td><td>98.9%</td></tr>
-<tr><td>Full-context BiLSTM</td><td>95.5% ± 0.4</td><td>98.9% ± 0.1</td></tr>
-<tr><td>Rationale BiLSTM</td><td>94.5% ± 0.4</td><td>98.6% ± 0.0</td></tr>
-<tr><td>Full Transformer</td><td>96.4%</td><td>98.9%</td></tr>
-<tr><td>Rationale Transformer</td><td>93.2%</td><td>97.7%</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<figure class="figure-block">
-<img alt="Performance comparison for TF-IDF, full-context BiLSTM and rationale BiLSTM" src="Images/interpretability-performance.png"/>
-<figcaption>Detection-performance comparison from the final project material.</figcaption>
-</figure>
-<div class="article-copy">
-<h3>Does the selected evidence matter?</h3>
-<p>Learned rationales carried more predictive information than equal-size random or positional controls. Removing selected evidence also changed model confidence, showing that the classifier depended on the selected tokens rather than merely displaying them after the prediction.</p>
-<div class="data-table-wrap">
-<table>
-<thead><tr><th>Evaluation</th><th>Result</th></tr></thead>
-<tbody>
-<tr><td>Learned rationale F1</td><td>94.5 ± 0.4</td></tr>
-<tr><td>Random-mask F1</td><td>86.6 ± 4.4</td></tr>
-<tr><td>First-token control F1</td><td>77.5 ± 2.0</td></tr>
-<tr><td>Last-token control F1</td><td>78.6 ± 5.2</td></tr>
-<tr><td>Sufficiency</td><td>−0.2270 ± 0.1053</td></tr>
-<tr><td>Comprehensiveness</td><td>0.5164 ± 0.0528</td></tr>
-<tr><td>Pairwise Jaccard</td><td>0.6329</td></tr>
-<tr><td>Prediction agreement</td><td>94.1%</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<figure class="figure-block">
-<img alt="Machine-written passage with model-selected evidence highlighted in yellow" src="Images/interpretability-rationale.png"/>
-<figcaption>Example of the selected evidence. Yellow indicates tokens made visible to the rationale predictor.</figcaption>
-</figure>
-</div>
-</section>
-<section class="content-section alt-bg" id="human">
-<div class="section-container">
-<div class="section-header"><h2 class="section-title">Human Evaluation</h2></div>
-<div class="article-copy">
-<p>To answer whether the rationales are interpretable by human evaluators, the study tested whether showing them helps people distinguish human-written from machine-generated text. Twenty-five participants contributed 250 retained judgements.</p>
-<p>Showing the learned rationales did not produce a clear improvement in human authorship judgements. The result separates two questions: whether evidence is useful to the model, and whether the same evidence is useful to a person.</p>
-</div>
-</div>
-</section>
-<section class="content-section" id="conclusion">
-<div class="section-container">
-<div class="section-header"><h2 class="section-title">Conclusion</h2></div>
-<div class="article-copy">
-<p>Strong machine-generated-text detection remained possible with restricted evidence. The selected evidence was informative to the predictor and the prediction depended on it, although exact selections varied across runs.</p>
-<p>The human study did not show a clear benefit from displaying the learned rationales. Evidence that is useful to the model is therefore not necessarily useful to a human evaluator.</p>
-</div>
-</div>
-</section>
-<section class="content-section alt-bg" id="materials">
-<div class="section-container">
-<div class="section-header"><h2 class="section-title">Research Materials</h2></div>
-<div class="resource-stack">
-<div class="resource-row resource-placeholder" data-future-path="Docs/interpretability-final-paper.pdf"><span class="resource-type">PDF</span><span><strong>Final Paper</strong><small>Placeholder — add the final paper to the repository when ready</small></span><span class="resource-status">To be added</span></div>
-<div class="resource-row resource-placeholder" data-future-path="Docs/interpretability-literature-review.pdf"><span class="resource-type">PDF</span><span><strong>Literature Review</strong><small>Placeholder — include if this artefact forms part of the final archive</small></span><span class="resource-status">To be added</span></div>
-<a class="resource-row" download="" href="Docs/interpretability-source.zip"><span class="resource-type">ZIP</span><span><strong>Source Code</strong><small>Compressed research source archive</small></span><span class="resource-arrow">↓</span></a>
-</div>
-</div>
-</section>
+
+
+    <section class="content-section" id="problem">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Problem</h2>
+            </div>
+
+            <div class="article-copy">
+
+                <p class="section-lead">
+                    A detector can tell us whether it thinks a passage is
+                    human-written or machine-generated. That prediction alone,
+                    however, does not show what in the passage supported the
+                    decision.
+                </p>
+
+                <p>
+                    This matters when a prediction needs to be checked or
+                    justified. Our approach is to use a rationale: a selected
+                    part of the input that the predictor actually uses to make
+                    its decision. Instead of giving the predictor the complete
+                    passage, a selector chooses which token positions remain
+                    available to it.
+                </p>
+
+                <p>
+                    Making that evidence visible creates two separate questions.
+                    Can the detector still perform well when it only receives
+                    selected text? And if those selected words are useful to the
+                    model, are they also useful to a person trying to judge
+                    whether the passage was written by a human or generated by
+                    a language model?
+                </p>
+
+            </div>
+
+            <figure class="figure-block rationale-showcase">
+                <img
+                    src="Images/interpretability-rationale.png"
+                    alt="Passage with tokens selected by the rationale model highlighted in yellow"
+                />
+
+                <figcaption>
+                    An example rationale. The highlighted tokens are the text
+                    selected by the model and made available to the predictor.
+                </figcaption>
+            </figure>
+
+        </div>
+    </section>
+
+
+    <section class="content-section alt-bg" id="research-question">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Research Question</h2>
+            </div>
+
+            <div class="article-copy">
+
+                <p class="research-question">
+                    Can a rationale-based classifier retain detection
+                    performance relative to a matched full-context classifier
+                    while exposing evidence that matters to its prediction, and
+                    does showing that evidence help human evaluators judge
+                    authorship?
+                </p>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="content-section" id="method">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Method</h2>
+            </div>
+
+            <div class="article-copy">
+
+                <p>
+                    We use an English subset of RAID containing 8,160 passages,
+                    split evenly between human-written and machine-generated
+                    text. The passages come from abstracts, books, news and
+                    poetry, while the machine-generated half covers six
+                    generator labels.
+                </p>
+
+                <dl class="method-summary">
+
+                    <div>
+                        <dt>Dataset</dt>
+                        <dd>
+                            8,160 passages: 4,080 human and 4,080 machine
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Data split</dt>
+                        <dd>
+                            5,760 training · 1,200 validation · 1,200 test
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Visible context</dt>
+                        <dd>
+                            Up to 512 tokens from each passage
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Rationale budget</dt>
+                        <dd>
+                            40% of the visible token positions
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Main comparison</dt>
+                        <dd>
+                            Rationale BiLSTM against a matched full-context
+                            BiLSTM
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Other comparisons</dt>
+                        <dd>
+                            TF-IDF baseline and full-context / rationale
+                            Transformer models
+                        </dd>
+                    </div>
+
+                </dl>
+
+
+                <h3>Selector and predictor</h3>
+
+                <p>
+                    The rationale model contains two separate BiLSTMs. The
+                    selector reads the visible passage and decides which token
+                    positions to keep. The predictor then makes the
+                    human-versus-machine decision from the selected token
+                    content.
+                </p>
+
+                <p>
+                    At evaluation time, the selector keeps 40% of the visible
+                    positions. Tokens that are not selected are zeroed before
+                    they reach the predictor. This means the predictor cannot
+                    use their token content, although their positions remain in
+                    the sequence.
+                </p>
+
+            </div>
+
+
+            <figure class="figure-block">
+                <img
+                    alt="Selector and predictor architecture used by the rationale model"
+                    src="Images/interpretability-architecture.png"
+                />
+
+                <figcaption>
+                    The rationale model. A selector chooses which token
+                    positions remain available before the predictor makes the
+                    final authorship classification.
+                </figcaption>
+            </figure>
+
+
+            <div class="article-copy">
+
+                <h3>Testing the selected evidence</h3>
+
+                <p>
+                    A model could perform well simply because it is still given
+                    enough text. To check whether the particular words selected
+                    by the model matter, we compare the learned rationale with
+                    random selections and with tokens taken from the beginning
+                    or end of the passage. Every comparison keeps the same
+                    number of tokens.
+                </p>
+
+                <p>
+                    We also test how much the prediction changes when the
+                    selected evidence is removed, and how similar the selected
+                    token positions are across independently trained models.
+                </p>
+
+
+                <h3>Human study</h3>
+
+                <p>
+                    The human study uses 20 passages from the test set. Each
+                    participant sees ten passages and judges each one as
+                    <em>Human</em>, <em>Machine</em> or <em>Cannot tell</em>.
+                    A passage can be shown as plain text, with the model's
+                    rationale highlighted, or with the same number of tokens
+                    highlighted at random.
+                </p>
+
+                <p>
+                    Twenty-five participants took part, giving 250 retained
+                    judgements.
+                </p>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="content-section alt-bg" id="results">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Results</h2>
+            </div>
+
+
+            <div class="result-block">
+
+                <div class="article-copy">
+
+                    <h3>Detection performance</h3>
+
+                    <p class="result-lead">
+                        <strong>
+                            The rationale BiLSTM reached 94.5% F1 while using
+                            only 40% of the visible text.
+                        </strong>
+                    </p>
+
+                    <p>
+                        The matched full-context BiLSTM reached 95.5% F1. The
+                        difference between them was 0.97 percentage points, so
+                        restricting the predictor to selected evidence resulted
+                        in only a small loss in detection performance.
+                    </p>
+
+                    <div class="data-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>F1</th>
+                                    <th>AUROC</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>TF-IDF</td>
+                                    <td>94.9%</td>
+                                    <td>98.9%</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Full-context BiLSTM</td>
+                                    <td>95.5% ± 0.4%</td>
+                                    <td>98.9% ± 0.1%</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Rationale BiLSTM</td>
+                                    <td>94.5% ± 0.4%</td>
+                                    <td>98.6% ± 0.0%</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Full Transformer</td>
+                                    <td>96.4% ± 0.2%</td>
+                                    <td>98.9% ± 0.0%</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Rationale Transformer</td>
+                                    <td>93.2% ± 0.3%</td>
+                                    <td>97.7% ± 0.3%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="result-note">
+                        Neural results are reported as mean ± standard deviation
+                        across three training seeds.
+                    </p>
+
+                </div>
+
+
+                <figure class="figure-block">
+                    <img
+                        alt="Performance comparison between the detection models"
+                        src="Images/interpretability-performance.png"
+                    />
+
+                    <figcaption>
+                        Detection performance on the final RAID test set.
+                    </figcaption>
+                </figure>
+
+            </div>
+
+
+            <div class="result-block">
+
+                <div class="article-copy">
+
+                    <h3>Did the selected evidence matter?</h3>
+
+                    <p class="result-lead">
+                        <strong>
+                            Yes. The predictor performed substantially better
+                            with the learned rationales than with equally sized
+                            alternative selections.
+                        </strong>
+                    </p>
+
+                    <p>
+                        Because every control keeps the same number of tokens,
+                        the difference comes from which text was selected rather
+                        than simply how much text the predictor received.
+                    </p>
+
+                    <div class="data-table-wrap compact-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Selection</th>
+                                    <th>F1</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>Learned rationale</td>
+                                    <td>94.5% ± 0.4%</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Random</td>
+                                    <td>86.6% ± 4.4%</td>
+                                </tr>
+
+                                <tr>
+                                    <td>First tokens</td>
+                                    <td>77.5% ± 2.0%</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Last tokens</td>
+                                    <td>78.6% ± 5.2%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <div class="evidence-notes">
+
+                        <p>
+                            <strong>Dependence.</strong>
+                            Removing the selected rationale reduced
+                            predicted-class confidence by 0.516 on average.
+                        </p>
+
+                        <p>
+                            <strong>Stability.</strong>
+                            The mean pairwise Jaccard similarity between
+                            selected token positions was 0.633.
+                        </p>
+
+                        <p>
+                            <strong>Prediction agreement.</strong>
+                            The three independently trained models gave the same
+                            predicted class for 94.1% of the test passages.
+                        </p>
+
+                    </div>
+
+                    <p>
+                        The predictions were therefore more consistent across
+                        training runs than the exact evidence selected for them.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-block">
+
+                <div class="article-copy">
+
+                    <h3>Did the rationales help people?</h3>
+
+                    <p class="result-lead">
+                        <strong>
+                            We found no clear evidence that showing the learned
+                            rationales improved human authorship judgements.
+                        </strong>
+                    </p>
+
+                    <p>
+                        Participants performed similarly whether they saw the
+                        passage as plain text, with the detector's rationale
+                        highlighted, or with random highlighting.
+                    </p>
+
+                    <div class="data-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Condition</th>
+                                    <th>Judgements</th>
+                                    <th>Raw accuracy</th>
+                                    <th>Cannot tell</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>Plain</td>
+                                    <td>83</td>
+                                    <td>47.0%</td>
+                                    <td>9.6%</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Detector</td>
+                                    <td>82</td>
+                                    <td>45.1%</td>
+                                    <td>8.5%</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Random</td>
+                                    <td>85</td>
+                                    <td>44.7%</td>
+                                    <td>15.3%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p>
+                        The statistical analysis reached the same conclusion.
+                        The confidence intervals were wide, and neither the
+                        Detector-versus-Plain nor Detector-versus-Random
+                        comparison showed a clear advantage for the learned
+                        highlighting.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="content-section" id="discussion">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Discussion &amp; Conclusion</h2>
+            </div>
+
+            <div class="article-copy">
+
+                <p>
+                    The main result is that strong detection remained possible
+                    even when the predictor was restricted to selected
+                    evidence. The rationale BiLSTM gave up less than one
+                    percentage point of F1 relative to the matched full-context
+                    model while using only 40% of the visible text.
+                </p>
+
+                <p>
+                    The control experiments also show that the selector was not
+                    simply keeping an arbitrary 40% of the passage. The learned
+                    selections performed much better than random, first-token
+                    and last-token selections of the same size, and removing
+                    the selected evidence substantially reduced model
+                    confidence.
+                </p>
+
+                <p>
+                    At the same time, the exact rationale was less stable than
+                    the final prediction. Different training runs often reached
+                    the same classification while selecting somewhat different
+                    token positions.
+                </p>
+
+                <p>
+                    The human study adds another distinction. Evidence can be
+                    useful to the predictor without automatically being useful
+                    to the person reading it. In this study, showing the learned
+                    rationales did not clearly improve human authorship
+                    judgements over plain text or random highlighting.
+                </p>
+
+                <p class="main-takeaway">
+                    <strong>Main takeaway:</strong>
+                    evidence that is useful to the model is not necessarily
+                    useful to a human reader.
+                </p>
+
+                <p class="discussion-note">
+                    These results describe the conditions tested here. The
+                    study uses English passages from domains and generators
+                    represented during training, and the human evaluation is
+                    based on 25 participants. Testing unseen generators, new
+                    domains and larger or more specialised participant groups
+                    remains future work.
+                </p>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="content-section alt-bg" id="resources">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Resources</h2>
+            </div>
+
+            <div class="resource-stack">
+
+                <div
+                    class="resource-row resource-placeholder"
+                    data-future-path="Docs/interpretability-final-paper.pdf"
+                >
+                    <span class="resource-type">PDF</span>
+
+                    <span>
+                        <strong>Final Paper</strong>
+                        <small>
+                            Final research paper
+                        </small>
+                    </span>
+
+                    <span class="resource-status">To be added</span>
+                </div>
+
+
+                <div
+                    class="resource-row resource-placeholder"
+                    data-future-path="Docs/interpretability-literature-review.pdf"
+                >
+                    <span class="resource-type">PDF</span>
+
+                    <span>
+                        <strong>Literature Review</strong>
+                        <small>
+                            Background review for the interpretability stream
+                        </small>
+                    </span>
+
+                    <span class="resource-status">To be added</span>
+                </div>
+
+
+                <div
+                    class="resource-row resource-placeholder"
+                    data-future-path="Docs/interpretability-source.zip"
+                >
+                    <span class="resource-type">ZIP</span>
+
+                    <span>
+                        <strong>Source Code</strong>
+                        <small>
+                            Compressed research source archive
+                        </small>
+                    </span>
+
+                    <span class="resource-status">To be added</span>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
 </main>
-<footer><div class="footer-content"><div class="footer-section"><h4>Researcher</h4><p>Murema Manganyi<br/><a href="mailto:mngkho012@myuct.ac.za">mngkho012@myuct.ac.za</a></p></div><div class="footer-section"><h4>Supervisor</h4><p>Dr Jan Buys</p></div><div class="footer-section"><h4 class="footer-brand"><img src="Images/favicon.svg" alt="" aria-hidden="true"/> Project</h4><p><a href="index.html">DETECTGPT home</a><br/><a href="resources.html">Project resources</a></p></div></div><div class="footer-bottom"><p>DETECTGPT · Interpretability</p></div></footer>
+
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Team</h4>
+            <p>Deogracias Mufula<br/>Murema Manganyi<br/>Umar Parker</p>
+        </div>
+
+        <div class="footer-section">
+            <h4>Supervisor</h4>
+            <p>Dr Jan Buys</p>
+        </div>
+
+        <div class="footer-section">
+            <h4 class="footer-brand">
+                <img src="Images/favicon.svg" alt="" aria-hidden="true"/>
+                DETECTGPT
+            </h4>
+            <p>
+                <a href="index.html">Project home</a><br/>
+                <a href="resources.html">Project resources</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>Department of Computer Science · University of Cape Town · 2026</p>
+    </div>
+
+    <div class="footer-logos" aria-label="University affiliations">
+        <img src="Images/uct-logo.png" alt="University of Cape Town" class="footer-logo uct-logo"/>
+        <img src="Images/cs-logo.png" alt="UCT Department of Computer Science" class="footer-logo cs-logo"/>
+        <img src="Images/school-of-it-logo.png" alt="UCT School of Information Technology" class="footer-logo it-logo"/>
+    </div>
+</footer>
+
 </body>
 </html>

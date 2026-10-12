@@ -2,24 +2,730 @@
 
 <html lang="en">
 <head>
-<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta content="Fine-Tuned Multilingual Detection research stream of the DetectGPT project." name="description"/>
-<title>Fine-Tuned Multilingual Detection | DETECTGPT</title><link href="Images/favicon.svg" rel="icon" type="image/svg+xml"/>
-<link href="css/style.css" rel="stylesheet"/>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta
+        content="Fine-Tuned Multilingual Detection research stream of the DetectGPT project."
+        name="description"
+    />
+    <title>Fine-Tuned Multilingual Detection | DETECTGPT</title>
+
+    <link href="Images/favicon.svg" rel="icon" type="image/svg+xml"/>
+    <link href="css/style.css" rel="stylesheet"/>
 </head>
-<body>
+
+<body class="multilingual-page">
+
 <div aria-hidden="true" class="background-animation"></div>
-<nav aria-label="Main navigation" id="main-nav"><div class="nav-container"><a class="nav-logo" href="index.html"><img class="brand-mark" src="Images/favicon.svg" alt="" aria-hidden="true"/><span>DETECTGPT</span></a><ul class="nav-links"><li><a href="index.html">Home</a></li><li><a href="statistical.html">Statistical</a></li><li><a href="interpretability.html">Interpretability</a></li><li><a aria-current="page" href="multilingual.html">Multilingual</a></li><li><a href="resources.html">Resources</a></li></ul></div></nav>
-<header class="page-hero"><div class="page-hero-content"><p class="page-kicker">Umar Parker</p><h1 class="page-title">Fine-Tuned Multilingual Detection</h1><p class="page-subtitle">An individual investigation into machine-generated-text detection for isiXhosa and isiZulu.</p></div></header>
+
+<nav aria-label="Main navigation" id="main-nav">
+    <div class="nav-container">
+        <a class="nav-logo" href="index.html">
+            <img
+                class="brand-mark"
+                src="Images/favicon.svg"
+                alt=""
+                aria-hidden="true"
+            />
+            <span>DETECTGPT</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="statistical.html">Statistical</a></li>
+            <li><a href="interpretability.html">Interpretability</a></li>
+            <li>
+                <a aria-current="page" href="multilingual.html">
+                    Multilingual
+                </a>
+            </li>
+            <li><a href="resources.html">Resources</a></li>
+        </ul>
+    </div>
+</nav>
+
+
+<header class="page-hero">
+    <div class="page-hero-content">
+        <p class="page-kicker">Umar Parker</p>
+
+        <h1 class="page-title">Fine-Tuned Multilingual Detection</h1>
+
+        <p class="page-subtitle">
+            An individual investigation into machine-generated-text detection
+            for isiXhosa and isiZulu.
+        </p>
+    </div>
+</header>
+
 
 <main class="article-shell">
-<section class="content-section"><div class="section-container"><div class="section-header"><h2 class="section-title">Overview</h2></div><div class="article-copy placeholder-copy"><p>This stream examines machine-generated-text detection for isiXhosa and isiZulu, including the role of language adaptation. The detailed methodology, results and interpretation are intentionally left to the researcher’s own final presentation of the work.</p></div></div></section>
-<section class="content-section alt-bg"><div class="section-container"><div class="section-header"><h2 class="section-title">Research Materials</h2></div><div class="resource-stack">
-<div class="resource-row resource-placeholder" data-future-path="Docs/multilingual-final-paper.pdf"><span class="resource-type">PDF</span><span><strong>Final Paper</strong><small>Placeholder — add the final paper to the repository when ready</small></span><span class="resource-status">To be added</span></div>
-<div class="resource-row resource-placeholder" data-future-path="Docs/multilingual-literature-review.pdf"><span class="resource-type">PDF</span><span><strong>Literature Review</strong><small>Placeholder — include if this artefact forms part of the final archive</small></span><span class="resource-status">To be added</span></div>
-<div class="resource-row resource-placeholder" data-future-path="Docs/multilingual-source.zip"><span class="resource-type">ZIP</span><span><strong>Source Code</strong><small>Placeholder — add the compressed source archive when ready</small></span><span class="resource-status">To be added</span></div>
-</div></div></section>
+
+
+    <section class="content-section" id="problem">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Problem</h2>
+            </div>
+
+            <div class="article-copy">
+
+                <p class="section-lead">
+                    The rapid growth of large language models (LLMs) has
+                    resulted in machine-generated text (MGT) being harder to
+                    distinguish from human-written text. This has raised
+                    concerns about misinformation, academic integrity and
+                    content authenticity.
+                </p>
+
+                <p>
+                    While much research has been done on MGT detection, this is
+                    largely confined to high-resource languages such as English.
+                    There is relatively little research done on low-resource
+                    languages such as South African languages. This research
+                    investigates MGT detection for two South African languages:
+                    isiXhosa and isiZulu.
+                </p>
+
+                <p>
+                    For isiXhosa and isiZulu specifically, this problem is
+                    compounded by the morphological structures of these
+                    languages. Both languages are agglutinative languages that
+                    are written conjunctively with rich noun-classes. Since the
+                    subword tokenisers used by multilingual models are trained
+                    mostly on high-resource languages such as English, they may
+                    fragment these morphologically dense words poorly, which may
+                    reduce the
+                    quality of machine-generated text and impair detectors’
+                    abilities to identify it.
+                </p>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="content-section alt-bg" id="research-question">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Research Question</h2>
+            </div>
+
+            <div class="article-copy">
+
+                <p class="research-question">
+                    How well do language-adaptively pretrained and LoRA
+                    fine-tuned XLM-RoBERTa (XLM-R) and mBERT models compare to a
+                    basic logistic regression model when detecting
+                    machine-generated text across isiXhosa and isiZulu, measured
+                    by macro-F1 alongside accuracy, precision, recall, and
+                    AUC-ROC?
+                </p>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="content-section" id="method">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Method</h2>
+            </div>
+
+            <div class="article-copy">
+
+                <p>
+                    We create a dataset of 11,718 human/machine text pairs using
+                    FineWeb-2 for the human text and Gemma 3 4B for the
+                    continuations. This is used to evaluate mBERT and XLM-R with
+                    and without language-adaptive pretraining vs a TF-IDF
+                    baseline. We found the word signals that indicate
+                    LLM-generated text by looking at the TF-IDF word weights and
+                    built a classifier on three word groups and how often they
+                    appear.
+                </p>
+
+                <dl class="method-summary">
+
+                    <div>
+                        <dt>Dataset</dt>
+                        <dd>
+                            11,718 human/machine pairs in isiXhosa and isiZulu
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Data split</dt>
+                        <dd>
+                            9,374 training · 1,171 validation · 1,173 test
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Machine text</dt>
+                        <dd>
+                            Gemma 3 4B IT continuations
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Detectors</dt>
+                        <dd>
+                            mBERT and XLM-R with full or low-rank adaptation
+                            (LoRA) fine-tuning
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Adaptation</dt>
+                        <dd>
+                            No language-adaptive pretraining (LAPT), full LAPT
+                            (combined, xho-only, zul-only) or LoRA LAPT (combined)
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Baselines</dt>
+                        <dd>
+                            Word- and char-level TF-IDF with logistic regression
+                        </dd>
+                    </div>
+
+                </dl>
+
+
+                <h3>Corpus filtering pipeline</h3>
+
+                <p>
+                    We chose a cut-off score of 0.95 (only accepted text with a
+                    <code>language_score &gt;= 0.95</code>) to make sure that the
+                    texts used were the correct language. Once the corpus was
+                    filtered, it was then split into two disjoint pools: a LAPT
+                    pool of unlabelled text and a reserved pool which was used
+                    for text generation. When constructing the splits, we
+                    grouped the documents by seed id to ensure that human and
+                    machine-generated pairs always stayed in the same split.
+                </p>
+
+            </div>
+
+
+            <figure class="figure-block">
+                <img
+                    alt="Pipeline: FineWeb-2 text is filtered and split into a LAPT pool of 80,446 documents, used to adapt mBERT and XLM-R, and a reserved pool, used with Gemma 3 4B IT to build 11,718 human/machine pairs; both feed 20 fine-tuned detectors and 2 TF-IDF baselines."
+                    src="Images/multilingual-pipeline.png"
+                />
+
+                <figcaption>
+                    The process we followed to generate all the MGT was to take
+                    each document from the reserved pool and split it into a
+                    shared context with two continuations, one human and one
+                    machine generated.
+                </figcaption>
+            </figure>
+
+
+            <div class="article-copy">
+
+                <h3>LAPT pipeline design</h3>
+
+                <p>
+                    To allow the model to take in all the tokens available, we
+                    needed to split the text into chunks which could be fed to
+                    the models without any text being truncated. When the data
+                    was chunked, it was packed into 512-token blocks using the
+                    FULL-SENTENCES approach. A separator token was inserted at
+                    the document boundary. When we chunked the data, we grouped
+                    them by language to ensure that isiXhosa and isiZulu text
+                    did not get mixed mid-sequence.
+                </p>
+
+                <p>
+                    For pretraining, we had two training modes. One mode was
+                    full-parameter LAPT and the other was LoRA LAPT using a rank
+                    of 256. We also pretrained on one language instead of both
+                    to evaluate the cross-lingual performance of the models. We
+                    used fixed hyperparameters using Gururangan et al.’s values
+                    rather than searching for the best parameter and used 3
+                    epochs mainly due to a tight compute budget.
+                </p>
+
+
+                <h3>TF-IDF baselines</h3>
+
+                <p>
+                    We created two variants of the baseline, where we use
+                    word-level TF-IDF and char-level TF-IDF. We added char-level
+                    TF-IDF due to the agglutinative nature of the languages.
+                </p>
+
+
+                <h3>Classifier fine-tuning design</h3>
+
+                <p>
+                    We tested 10 configurations of fine-tuning for both mBERT
+                    and XLM-R. This consisted of a full-fine-tuning run for each
+                    pretrained model and a LoRA fine-tuning run for each model.
+                    We then also tested full-fine-tuning and LoRA fine-tuning for
+                    both models without using LAPT.
+                </p>
+
+                <p>
+                    To get the hyperparameters, we used BOHB-style search using
+                    Optuna’s TPESampler. When a LoRA trial was run, rank was also
+                    searched rather than fixed. Each model ran 8 trials before
+                    completing.
+                </p>
+
+
+                <h3>Evaluation metrics</h3>
+
+                <p>
+                    Each classifier run reports the accuracy, precision, recall,
+                    F1 score and confusion matrix. This was done for the TF-IDF
+                    baseline and both mBERT and XLM-R classifiers.
+                </p>
+
+                <p>
+                    McNemar’s tests compare two classifiers evaluated on the
+                    same test set looking at examples where they disagree. The
+                    tests ran at two thresholds with 50 comparisons for each.
+                    Since we conducted 100 comparisons, we applied Bonferroni
+                    correction. This produced a corrected threshold of
+                    α = 0.0005.
+                </p>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="content-section alt-bg" id="results">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Results</h2>
+            </div>
+
+
+            <div class="result-block">
+
+                <div class="article-copy">
+
+                    <h3>Model accuracy</h3>
+
+                    <p class="result-lead">
+                        <strong>
+                            Our first finding was that across all 22 models
+                            tested, we had accuracy figures of 0.9970-0.9996.
+                        </strong>
+                    </p>
+
+                    <p>
+                        We also found that a TF-IDF baseline did as well as the
+                        transformer detectors, showing that the words used in
+                        the text were enough of an indicator.
+                    </p>
+
+                    <div class="data-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Accuracy</th>
+                                    <th>Macro-F1</th>
+                                    <th>AUC-ROC</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>TF-IDF (word)</td>
+                                    <td>0.9974</td>
+                                    <td>0.9974</td>
+                                    <td>0.9999</td>
+                                </tr>
+
+                                <tr>
+                                    <td>TF-IDF (char)</td>
+                                    <td>0.9974</td>
+                                    <td>0.9974</td>
+                                    <td>0.99997</td>
+                                </tr>
+
+                                <tr>
+                                    <td>mBERT (10 configurations)</td>
+                                    <td>0.9970&nbsp;-&nbsp;0.9991</td>
+                                    <td>0.9970&nbsp;-&nbsp;0.9991</td>
+                                    <td>0.99957&nbsp;-&nbsp;0.99999</td>
+                                </tr>
+
+                                <tr>
+                                    <td>XLM-R (10 configurations)</td>
+                                    <td>0.9970&nbsp;-&nbsp;0.9996</td>
+                                    <td>0.9970&nbsp;-&nbsp;0.9996</td>
+                                    <td>0.99953&nbsp;-&nbsp;0.99999</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-block">
+
+                <div class="article-copy">
+
+                    <h3>Statistical significance</h3>
+
+                    <p class="result-lead">
+                        <strong>
+                            We found that none of the adapted vs unadapted
+                            comparisons showed statistically significant results
+                            at the default threshold.
+                        </strong>
+                    </p>
+
+                    <p>
+                        Many non-significant comparisons in our results had very
+                        few discordant pairs due to the near-ceiling accuracy
+                        observed and should be treated as inconclusive due to
+                        limited statistical power rather than a confirmation of
+                        equivalence.
+                    </p>
+
+                    <div class="data-table-wrap compact-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Comparisons (default threshold)</th>
+                                    <th>Tested</th>
+                                    <th>Significant (α = 0.0005)</th>
+                                    <th>Smallest p</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>Adapted vs unadapted</td>
+                                    <td>16</td>
+                                    <td>0</td>
+                                    <td>0.22</td>
+                                </tr>
+
+                                <tr>
+                                    <td>All comparisons</td>
+                                    <td>50</td>
+                                    <td>0</td>
+                                    <td>0.031</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-block">
+
+                <div class="article-copy">
+
+                    <h3>Lexical indicator analysis</h3>
+
+                    <p class="result-lead">
+                        <strong>
+                            We found that conjunctions used in the text were a
+                            good signal for detecting human or machine text.
+                        </strong>
+                    </p>
+
+                    <p>
+                        We found that some conjunctions were human-leaning such
+                        as <em>xa</em> (when), <em>uma</em> (if),
+                        <em>nangona</em> (although) and <em>ukuze</em> (in
+                        order to). The three highest machine-leaning
+                        conjunctions that we found were <em>ukuba</em> (if/to
+                        be), <em>ukuthi</em> (that) and <em>ngoba</em>
+                        (because). Other machine indicators were infinitive verb
+                        forms and generic vocabulary such as <em>abantu</em>
+                        (people) and <em>esihle</em> (beautiful).
+                    </p>
+
+                </div>
+
+
+                <figure class="figure-block">
+                    <img
+                        alt="Bar chart of three word groups as a percentage of words in human-written and LLM-generated text: ukuba, ukuthi, ngoba 1.9 vs 8.1; uku-verbs 3.0 vs 6.2; other connectives 5.2 vs 3.2."
+                        src="Images/multilingual-marker-words.png"
+                    />
+
+                    <figcaption>
+                        Words used to identify if text is human-written or
+                        LLM-generated
+                    </figcaption>
+                </figure>
+
+
+                <div class="article-copy">
+
+                    <p>
+                        This was also supported by a classifier built on three
+                        word rates alone achieving an accuracy of 88.92%.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-block">
+
+                <div class="article-copy">
+
+                    <h3>Robustness and confound checks</h3>
+
+                    <p class="result-lead">
+                        <strong>
+                            While LoRA trains fewer parameters and uses less VRAM,
+                            it is less robust than full fine-tuning.
+                        </strong>
+                    </p>
+
+                    <p>
+                        We found that when we stripped the punctuation, LoRA was
+                        affected more greatly than full fine-tuning in 9 out of
+                        10 pairs with the only exception being mBERT with
+                        no-LAPT.
+                    </p>
+
+                </div>
+
+
+                <figure class="figure-block">
+                    <img
+                        alt="Bar chart of the accuracy drop in percentage points under full punctuation stripping for full and LoRA fine-tuning in each of the 10 configurations; LoRA drops more in 9 of the 10, by up to 4.82 points."
+                        src="Images/multilingual-robustness.png"
+                    />
+
+                    <figcaption>
+                        Accuracy drop under full punctuation stripping for
+                        matched full fine-tune vs. LoRA classifier pairs, across
+                        all 10 configurations.
+                    </figcaption>
+                </figure>
+
+
+                <div class="article-copy">
+
+                    <div class="data-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Check</th>
+                                    <th>Diagnostic accuracy (raw → controlled)</th>
+                                    <th>Transformer accuracy change (default threshold)</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>Length</td>
+                                    <td>65.71% → 51.98%</td>
+                                    <td>-0.15 to +0.02 pp</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Punctuation</td>
+                                    <td>76.85% → 50.09%</td>
+                                    <td>-4.82 to +0.09 pp</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Repetition</td>
+                                    <td>-</td>
+                                    <td>-0.02 to +0.03 pp</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Word groups</td>
+                                    <td>88.92%</td>
+                                    <td>-0.51 to +0.13 pp</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="content-section" id="discussion">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Discussion &amp; Conclusion</h2>
+            </div>
+
+            <div class="article-copy">
+
+                <p>
+                    TF-IDF models were able to achieve an accuracy of 99.74%.
+                    This suggests the task may not require deep linguistic
+                    understanding. The detection may be catching shallow
+                    artifacts of Gemma 3 4B IT’s generation rather than testing
+                    genuinely sophisticated content-based distinction.
+                </p>
+
+                <p>
+                    This does not mean that detection for isiXhosa and isiZulu
+                    is easy but rather that the generator, which is small
+                    compared to many frontier models, was not able to produce
+                    text without clear detectable signals.
+                </p>
+
+                <p class="main-takeaway">
+                    <strong>Takeaway:</strong>
+                    Near-perfect detectors; adaptation showed no measurable
+                    gain; word choice was a strong indicator.
+                </p>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="content-section alt-bg" id="limitations">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Limitations and Future Work</h2>
+            </div>
+
+            <div class="article-copy">
+
+                <ul>
+                    <li>
+                        The limitations faced in this work were that we only
+                        used one model for generation.
+                    </li>
+                    <li>
+                        We also did not test multiple different prompting
+                        strategies and prompts, with our prompt causing the
+                        model to generate text that contained generic vocabulary
+                        and lacked sentence complexity.
+                    </li>
+                    <li>
+                        We also excluded cross-domain evaluation making the
+                        detector less useful in real scenarios.
+                    </li>
+                    <li>
+                        We also only used isiXhosa and isiZulu not the broader
+                        Nguni languages or other South African language
+                        families.
+                    </li>
+                </ul>
+
+                <p>
+                    <strong>Future work:</strong>
+                    Extensions of this project would be to test with multiple
+                    generators including larger models. We would extend the
+                    classifiers to other Nguni languages or Sotho-Tswana
+                    languages, and we would also compute cross-domain
+                    evaluation and revisit the prompt used for generation.
+                </p>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="content-section" id="resources">
+        <div class="section-container">
+
+            <div class="section-header">
+                <h2 class="section-title">Resources</h2>
+            </div>
+
+            <div class="resource-stack">
+
+                <div
+                    class="resource-row resource-placeholder"
+                    data-future-path="Docs/multilingual-final-paper.pdf"
+                >
+                    <span class="resource-type">PDF</span>
+
+                    <span>
+                        <strong>Final Paper</strong>
+                        <small>
+                            Detecting Machine-Generated Text in Low-Resource
+                            South African Nguni Languages
+                        </small>
+                    </span>
+
+                    <span class="resource-status">To be added</span>
+                </div>
+
+
+                <div
+                    class="resource-row resource-placeholder"
+                    data-future-path="Docs/multilingual-literature-review.pdf"
+                >
+                    <span class="resource-type">PDF</span>
+
+                    <span>
+                        <strong>Literature Review</strong>
+                        <small>
+                            Background review for the multilingual stream
+                        </small>
+                    </span>
+
+                    <span class="resource-status">To be added</span>
+                </div>
+
+
+                <div
+                    class="resource-row resource-placeholder"
+                    data-future-path="Docs/multilingual-source.zip"
+                >
+                    <span class="resource-type">ZIP</span>
+
+                    <span>
+                        <strong>Source Code</strong>
+                        <small>
+                            Compressed research source archive
+                        </small>
+                    </span>
+
+                    <span class="resource-status">To be added</span>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
 </main>
+
+
 <footer>
     <div class="footer-content">
         <div class="footer-section">
@@ -54,4 +760,6 @@
         <img src="Images/school-of-it-logo.png" alt="UCT School of Information Technology" class="footer-logo it-logo"/>
     </div>
 </footer>
-</body></html>
+
+</body>
+</html>

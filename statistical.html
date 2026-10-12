@@ -13,12 +13,270 @@
 <header class="page-hero"><div class="page-hero-content"><p class="page-kicker">Deogracias Mufula</p><h1 class="page-title">Statistical Detection</h1><p class="page-subtitle">An individual investigation into statistical signals for distinguishing human-written and machine-generated text.</p></div></header>
 
 <main class="article-shell">
-<section class="content-section"><div class="section-container"><div class="section-header"><h2 class="section-title">Overview</h2></div><div class="article-copy placeholder-copy"><p>This stream investigates statistical approaches to machine-generated-text detection. The project homepage keeps this contribution at a high level so that the detailed framing, analysis and interpretation remain the responsibility of its researcher.</p></div></div></section>
-<section class="content-section alt-bg"><div class="section-container"><div class="section-header"><h2 class="section-title">Research Materials</h2></div><div class="resource-stack">
-<div class="resource-row resource-placeholder" data-future-path="Docs/statistical-final-paper.pdf"><span class="resource-type">PDF</span><span><strong>Final Paper</strong><small>Placeholder — add the final paper to the repository when ready</small></span><span class="resource-status">To be added</span></div>
-<div class="resource-row resource-placeholder" data-future-path="Docs/statistical-literature-review.pdf"><span class="resource-type">PDF</span><span><strong>Literature Review</strong><small>Placeholder — include if this artefact forms part of the final archive</small></span><span class="resource-status">To be added</span></div>
-<div class="resource-row resource-placeholder" data-future-path="Docs/statistical-source.zip"><span class="resource-type">ZIP</span><span><strong>Source Code</strong><small>Placeholder — add the compressed source archive when ready</small></span><span class="resource-status">To be added</span></div>
-</div></div></section>
+
+<style> /* ---------- HTML flow diagrams ---------- */
+.stat-diagram { max-width: 460px; margin: 0 auto; }
+.stat-node { border: 2px solid currentColor; border-radius: 10px; padding: 0.6rem 0.9rem; text-align: center; background: rgba(128,128,128,0.08); font-weight: 600; }
+.stat-node small { display: block; font-weight: 400; opacity: 0.75; font-size: 0.82rem; margin-top: 0.15rem; }
+.stat-node.is-input { border-color: #6b7280; }
+.stat-node.is-score { border-color: #2563eb; }
+.stat-node.is-perturb { border-color: #d97706; }
+.stat-node.is-decide { border-color: #16a34a; }
+.stat-down { text-align: center; line-height: 1.7; opacity: 0.65; font-size: 0.9rem; }
+.stat-split { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.stat-stage { border: 1px dashed rgba(128,128,128,0.6); border-radius: 14px; padding: 0.4rem 0.8rem 0.8rem; margin: 0.2rem 0; }
+.stat-stage-label { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; margin: 0.2rem 0 0.5rem; text-align: center; } @media (max-width: 480px) {
+.stat-split { grid-template-columns: 1fr; } }
+
+/* ---------- Uploaded image sizing only ---------- */
+.stat-fig img { width: auto; max-width: 70%; max-height: 450px; height: auto; object-fit: contain; background: #fff; padding: 8px; border-radius: 8px; }
+</style>
+
+<!-- OVERVIEW -->
+<section class="content-section"><div class="section-container">
+  <div class="section-header"><h2 class="section-title">Overview</h2></div>
+  <div class="article-copy">
+    <p>Large language models now produce news-style text that is hard to tell apart from human writing. This stream asks one focused question: <strong>how well do per-token log-likelihood and curvature-based (DetectGPT-style) scoring compare when detecting machine-generated text, under the same experimental conditions?</strong></p>
+    <p>Both methods are <em>zero-shot</em>: neither is trained on labelled examples. Prior work evaluates them separately, on different datasets and models. Here they share the same dataset, the same generator and the same scoring backbone (Llama 3.2 3B), so any difference in performance can be attributed to the detection method itself.</p>
+    <div class="stat-callout"><strong>Headline result:</strong> under these matched conditions, log-likelihood reached an AUROC of 0.9524 and curvature 0.6668. This is a finding about this controlled setup, not a claim that log-likelihood is better in general. Curvature's theory assumes the scoring model resembles the generating model, and here they differ.</div>
+  </div>
+</div></section>
+
+<!-- DATASET -->
+<section class="content-section alt-bg"><div class="section-container">
+  <div class="section-header"><h2 class="section-title">Dataset</h2></div>
+  <div class="article-copy">
+    <p>The human class is 250 BBC News articles from the XSum corpus, filtered to 100–600 words and sampled with a fixed seed. Each article's reference summary was used as a prompt for <strong>Gemma 3 4B</strong>, producing a topic-matched machine-generated article. Pairing by topic means the detectors have to pick up on writing <em>style</em>, not subject matter.</p>
+    <p>Each sample is a full news article with multiple paragraphs, not a short snippet. Human articles average roughly 294 words and the generated ones roughly 307, about 150,000 words of scored text in total.</p>
+    <figure class="stat-fig">
+      <div class="stat-diagram" role="group" aria-label="Dataset construction pipeline in seven steps: XSum validation split, length filter, random sample of 250 articles, summary used as prompt, Gemma 3 4B generation, paired dataset of 500 samples, and a train, validation and test split.">
+        <div class="stat-node is-input">XSum validation split<small>HuggingFace <code>datasets</code></small></div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-node is-input">Filter<small>100–600 words</small></div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-node is-input">Random sample<small>250 articles, seed = 42</small></div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-node is-perturb">Reference summary<small>used as the generation prompt</small></div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-node is-score">Gemma 3 4B<small>writes a paired machine article</small></div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-node is-decide">Paired dataset<small>250 human + 250 machine = 500</small></div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-node is-decide">Train / Validation / Test<small>150 / 150 / 200</small></div>
+      </div>
+      <figcaption>Dataset construction pipeline: human articles from XSum, paired machine articles from Gemma 3 4B.</figcaption>
+    </figure>
+    <div class="stat-table-wrap">
+      <table class="stat-table">
+        <caption>Dataset composition by split.</caption>
+        <thead><tr><th>Split</th><th>Human</th><th>Machine</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>Train</td><td>75</td><td>75</td><td>150</td></tr>
+          <tr><td>Validation</td><td>75</td><td>75</td><td>150</td></tr>
+          <tr><td>Test</td><td>100</td><td>100</td><td>200</td></tr>
+          <tr><td><strong>Total</strong></td><td><strong>250</strong></td><td><strong>250</strong></td><td><strong>500</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div></section>
+
+<!-- METHODS -->
+<section class="content-section"><div class="section-container">
+  <div class="section-header"><h2 class="section-title">Methods</h2></div>
+  <div class="article-copy">
+    <h3>Detector 1: per-token log-likelihood</h3>
+    <p>The scoring model reads the text and assigns each token a probability given the tokens before it. The score is the average log-probability. Machine text tends to score higher (less negative), because language models generate by choosing statistically likely tokens.</p>
+    <div class="stat-eq">𝓛(x) = (1/n) · Σ<sub>i=1..n</sub> log p<sub>θ</sub>( t<sub>i</sub> | t<sub>1</sub>, …, t<sub>i−1</sub> )</div>
+
+    <h3>Detector 2: curvature (DetectGPT-style)</h3>
+    <p>Curvature asks a different question. Instead of how probable the text is, it asks how much more probable the text is than slightly reworded versions of itself. For each text, 30 perturbations are generated by masking 15% of the words and refilling them with T5. Both the original and every perturbation are scored by the same Llama backbone.</p>
+    <div class="stat-eq">d(x) = [ log p<sub>θ</sub>(x) − mean<sub>j</sub> log p<sub>θ</sub>(x̃<sub>j</sub>) ] / std<sub>j</sub> log p<sub>θ</sub>(x̃<sub>j</sub>)</div>
+    <figure class="stat-fig">
+      <div class="stat-diagram" role="group" aria-label="Curvature pipeline in three stages. Stage 1 scores the original text. Stage 2 masks 15 percent of the text, refills it with T5, repeats this 30 times and scores every perturbation. Stage 3 computes the standardised discrepancy and compares it to the threshold 5.1340.">
+        <div class="stat-stage">
+          <div class="stat-stage-label">Stage 1 · Score the original</div>
+          <div class="stat-node is-input">Input text <em>x</em></div>
+          <div class="stat-down" aria-hidden="true">▼</div>
+          <div class="stat-node is-score">Score original<small>Llama 3.2 3B</small></div>
+        </div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-stage">
+          <div class="stat-stage-label">Stage 2 · Perturb and score</div>
+          <div class="stat-node is-perturb">Mask 15% of the words</div>
+          <div class="stat-down" aria-hidden="true">▼</div>
+          <div class="stat-node is-perturb">T5 refills the masks<small>repeated k = 30 times</small></div>
+          <div class="stat-down" aria-hidden="true">▼</div>
+          <div class="stat-node is-score">Score each perturbation<small>Llama 3.2 3B</small></div>
+        </div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-stage">
+          <div class="stat-stage-label">Stage 3 · Decide</div>
+          <div class="stat-node is-decide">Standardised discrepancy<small>(original − mean) ÷ std of perturbations</small></div>
+          <div class="stat-down" aria-hidden="true">▼</div>
+          <div class="stat-node is-decide">Compare to threshold 5.1340<small>≥ threshold → machine-generated</small></div>
+        </div>
+      </div>
+      <figcaption>Curvature pipeline: one original score plus 30 perturbation scores per text, roughly 30× the compute of log-likelihood.</figcaption>
+    </figure>
+
+    <h3>Shared setup</h3>
+    <p>Both detectors use Llama 3.2 3B as the scoring backbone. Each turns its continuous score into a decision with a single threshold, chosen by maximising Youden's J (sensitivity + specificity − 1) on the <strong>validation split only</strong>. The test split is never used to select a threshold. The thresholds were −2.0031 for log-likelihood and 5.1340 for curvature. Results are reported on the held-out test set of 200 articles.</p>
+    <p>The original proposal specified T5-large as the perturbation model. Our primary experiments used T5-base because of compute limits. When more compute became available, the full curvature run was repeated with T5-large, and both results are reported.</p>
+    <div class="stat-table-wrap">
+      <table class="stat-table">
+        <caption>Experimental configuration for both detectors.</caption>
+        <thead><tr><th>Parameter</th><th>Log-likelihood</th><th>Curvature</th></tr></thead>
+        <tbody>
+          <tr><td>Scoring model</td><td>Llama 3.2 3B</td><td>Llama 3.2 3B</td></tr>
+          <tr><td>Perturbation model</td><td>—</td><td>T5-base / T5-large</td></tr>
+          <tr><td>Perturbations (k)</td><td>—</td><td>30</td></tr>
+          <tr><td>Mask ratio</td><td>—</td><td>0.15</td></tr>
+          <tr><td>Minimum tokens</td><td>10</td><td>10</td></tr>
+          <tr><td>Threshold criterion</td><td>Youden's J</td><td>Youden's J</td></tr>
+          <tr><td>Threshold split</td><td>Validation</td><td>Validation</td></tr>
+          <tr><td>Bootstrap replicates</td><td>1000</td><td>1000</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figure class="stat-fig">
+      <div class="stat-diagram" role="group" aria-label="Both detectors read the same dataset. Log-likelihood and curvature each produce a score, a threshold is calibrated on the validation split only, and the result is a binary human or machine decision.">
+        <div class="stat-node is-input">Dataset<small>500 paired articles</small></div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-split">
+          <div class="stat-node is-score">Log-likelihood<small>one scoring pass</small></div>
+          <div class="stat-node is-perturb">Curvature<small>1 + 30 scoring passes</small></div>
+        </div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-node is-input">Threshold calibration<small>Youden's J, validation split only</small></div>
+        <div class="stat-down" aria-hidden="true">▼</div>
+        <div class="stat-node is-decide">Binary decision<small>human-written or machine-generated</small></div>
+      </div>
+      <figcaption>Both detectors share the dataset, the backbone and the threshold procedure. Only the scoring method differs.</figcaption>
+    </figure>
+
+    <h3>Evaluation</h3>
+    <p><strong>AUROC</strong> is the main metric. It is the probability that a random machine text is ranked above a random human text, and it does not depend on any one threshold. <strong>Precision, recall, F1 and accuracy</strong> describe behaviour at the chosen threshold. 95% confidence intervals come from 1000 bootstrap resamples of the test set. <strong>McNemar's test</strong> and <strong>DeLong's test</strong> check whether the gap between the two detectors is statistically significant.</p>
+  </div>
+</div></section>
+
+<!-- RESULTS -->
+<section class="content-section alt-bg"><div class="section-container">
+  <div class="section-header"><h2 class="section-title">Results</h2></div>
+  <div class="article-copy">
+    <div class="stat-table-wrap">
+      <table class="stat-table">
+        <caption>Detector performance on the held-out test set (n = 200). TF-IDF rows are supervised baselines included for reference, not zero-shot methods.</caption>
+        <thead><tr><th>Detector</th><th>AUROC</th><th>F1</th><th>Precision</th><th>Recall</th><th>Accuracy</th></tr></thead>
+        <tbody>
+          <tr><td>Log-likelihood</td><td>0.9524</td><td>0.8889</td><td>0.8276</td><td>0.9600</td><td>0.8800</td></tr>
+          <tr><td>Curvature (T5-base)</td><td>0.6668</td><td>0.7645</td><td>0.6226</td><td>0.9900</td><td>0.6950</td></tr>
+          <tr><td>Curvature (T5-large)</td><td>0.6937</td><td>0.7645</td><td>0.6226</td><td>0.9900</td><td>0.6950</td></tr>
+          <tr><td>TF-IDF (shared, domain transfer)</td><td>0.9719</td><td>0.8475</td><td>0.9740</td><td>0.7500</td><td>0.8650</td></tr>
+          <tr><td>TF-IDF (self-trained, in-domain)</td><td>0.9962</td><td>0.9588</td><td>0.9894</td><td>0.9300</td><td>0.9600</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="stat-fig-pair">
+      <figure class="stat-fig">
+        <img src="Images/statistical/combined_roc.png" alt="ROC curves for log-likelihood (AUROC 0.952) and curvature (AUROC 0.667) on one axis, with the random-chance diagonal." loading="lazy"/>
+        <figcaption>Log-likelihood's ROC curve dominates curvature's across nearly all thresholds.</figcaption>
+      </figure>
+      <figure class="stat-fig">
+        <img src="Images/statistical/score_distributions.png" alt="Histograms of detection scores for human and machine test samples, for log-likelihood and for curvature." loading="lazy"/>
+        <figcaption>Heavy overlap in curvature's scores explains its lower AUROC.</figcaption>
+      </figure>
+    </div>
+
+    <h3>Statistical significance</h3>
+    <div class="stat-table-wrap">
+      <table class="stat-table">
+        <caption>AUROC confidence intervals and pairwise tests (log-likelihood vs. curvature, T5-base).</caption>
+        <thead><tr><th>Detector</th><th>95% bootstrap CI</th><th>McNemar p</th><th>DeLong p</th></tr></thead>
+        <tbody>
+          <tr><td>Log-likelihood</td><td>[0.9135, 0.9831]</td><td rowspan="2">5.74 × 10<sup>−6</sup></td><td rowspan="2">3.19 × 10<sup>−6</sup></td></tr>
+          <tr><td>Curvature (T5-base)</td><td>[0.5896, 0.7482]</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The confidence intervals do not overlap, and both tests agree that the gap is not sampling noise.</p>
+
+    <h3>Where the errors come from</h3>
+    <div class="stat-table-wrap">
+      <table class="stat-table">
+        <caption>Confusion matrix counts on the held-out test set (100 human, 100 machine). Positive class = machine-generated.</caption>
+        <thead><tr><th>Detector</th><th>True pos.</th><th>True neg.</th><th>False pos.</th><th>False neg.</th></tr></thead>
+        <tbody>
+          <tr><td>Log-likelihood</td><td>96</td><td>80</td><td>20</td><td>4</td></tr>
+          <tr><td>Curvature (T5-base and T5-large)</td><td>99</td><td>40</td><td>60</td><td>1</td></tr>
+          <tr><td>TF-IDF (self-trained)</td><td>93</td><td>99</td><td>1</td><td>7</td></tr>
+          <tr><td>TF-IDF (shared, domain transfer)</td><td>75</td><td>98</td><td>2</td><td>25</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>At its calibrated threshold, log-likelihood produced 96 true positives, 80 true negatives, 20 false positives and 4 false negatives. Curvature produced 99, 40, 60 and 1. Curvature catches almost every machine text, but it also flags 60 of the 100 human articles as machine-generated.</p>
+    <p>Of the 63 articles where the two detectors disagreed, 49 were human texts that log-likelihood classified correctly and curvature did not. The examples inspected were attribution-heavy journalism with named sources, direct quotes and specific figures. Perturbing a quotation or a proper name rarely reproduces the original wording, which plausibly inflates curvature's discrepancy score for human text.</p>
+  </div>
+</div></section>
+
+<!-- DISCUSSION -->
+<section class="content-section"><div class="section-container">
+  <div class="section-header"><h2 class="section-title">Discussion</h2></div>
+  <div class="article-copy">
+    <h3>Why did curvature underperform here?</h3>
+    <p>The first candidate was the smaller T5-base perturbation model. Re-running the full pipeline with the originally proposed T5-large raised AUROC only from 0.6668 to 0.6937, with heavily overlapping confidence intervals. It cost about 5.4 hours of scoring instead of about 35 minutes. Perturbation model size is therefore not the main cause.</p>
+    <div class="stat-table-wrap">
+      <table class="stat-table">
+        <caption>Curvature detector under the two perturbation models.</caption>
+        <thead><tr><th>Perturbation model</th><th>AUROC</th><th>95% CI</th><th>Threshold</th><th>Scoring time</th></tr></thead>
+        <tbody>
+          <tr><td>T5-base</td><td>0.6668</td><td>[0.5896, 0.7482]</td><td>5.1340</td><td>≈ 35 min</td></tr>
+          <tr><td>T5-large</td><td>0.6937</td><td>[0.6156, 0.7737]</td><td>4.4115</td><td>≈ 5.4 hrs</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>A more likely explanation is a <strong>scorer–generator mismatch</strong>. Curvature's theory relies on machine text sitting at a sharp local peak of the <em>generating</em> model's probability landscape. In this setup Llama 3.2 3B scores text written by Gemma 3 4B. Log-likelihood only needs the scorer to rate machine text as more predictable on average, so it tolerates the mismatch much better.</p>
+    <h3>Is the extra compute worth it?</h3>
+    <p>Not in this setting. Curvature costs about 30× the compute per text for a weaker result. This is the same cost problem that motivated Fast-DetectGPT.</p>
+    <h3>The threshold shapes the errors</h3>
+    <p>Each detector's operating point sets which mistakes it makes. Curvature's recall of 0.99 against precision of 0.62 means it errs towards false accusations of human authors. For something like academic-integrity screening a higher threshold would be appropriate, at the cost of missing some machine text.</p>
+    <div class="stat-fig-pair">
+      <figure class="stat-fig">
+        <img src="Images/statistical/ll_threshold_sensitivity.png" alt="Precision, recall, F1 and accuracy for log-likelihood across candidate validation thresholds, with the selected threshold marked." loading="lazy"/>
+        <figcaption>Log-likelihood threshold sensitivity (selected threshold −2.0031).</figcaption>
+      </figure>
+      <figure class="stat-fig">
+        <img src="Images/statistical/curv_threshold_sensitivity.png" alt="Precision, recall, F1 and accuracy for curvature across candidate validation thresholds, with the selected threshold marked." loading="lazy"/>
+        <figcaption>Curvature threshold sensitivity (selected threshold 5.1340).</figcaption>
+      </figure>
+    </div>
+    <h3>Secondary findings</h3>
+    <p>A logistic-regression ensemble of both scores reached an AUROC of 0.9380 against 0.9401 for log-likelihood alone, so the two signals are not complementary here. The TF-IDF baselines score well because they are supervised. The shared model reached 0.9719 under domain transfer, and the self-trained model 0.9962 in-domain, which shows how much a trained classifier can exploit generator-specific vocabulary that zero-shot methods cannot see.</p>
+  </div>
+</div></section>
+
+<!-- LIMITATIONS -->
+<section class="content-section alt-bg"><div class="section-container">
+  <div class="section-header"><h2 class="section-title">Limitations and Future Work</h2></div>
+  <div class="article-copy">
+    <ul>
+      <li><strong>Scope:</strong> one generator (Gemma 3 4B), one scoring backbone (Llama 3.2 3B), English BBC news only, and 500 articles in total. Results may not transfer to other generators, domains or scorers.</li>
+      <li><strong>Paraphrasing attack:</strong> an exploratory test caused a large drop in both detectors, but the paraphraser compressed documents into short summaries, which confounds the result. It is not reported as a robustness finding.</li>
+      <li><strong>Transparency note:</strong> an early curvature implementation omitted the standard-deviation normalisation (AUROC 0.6169). It was corrected before the final results.</li>
+    </ul>
+    <p><strong>Future work:</strong> test a scorer matched to the generator; run a length-preserving paraphrase attack; score articles in sub-article spans, since the detectors respond to local style rather than topic; and extend to more generators and domains.</p>
+  </div>
+</div></section>
+
+<!-- RESEARCH MATERIALS -->
+<section class="content-section"><div class="section-container"><div class="section-header"><h2 class="section-title">Research Materials</h2></div><div class="resource-stack">
+<div class="resource-row" data-future-path="Docs/statistical-final-paper.pdf"><span class="resource-type">PDF</span><span><strong><a href="Docs/statistical-final-paper.pdf">Final Paper</a></strong><small>A Comparative Evaluation of Per-Token Log-Likelihood and Curvature-Based Zero-Shot Detection of LLM-Generated Text</small></span><span class="resource-status">Available</span></div>
+<div class="resource-row" data-future-path="Docs/statistical-literature-review.pdf"><span class="resource-type">PDF</span><span><strong><a href="Docs/statistical-literature-review.pdf">Literature Review</a></strong><small>Detecting and Interpreting Text Generated by Large Language Models: A Literature Review</small></span><span class="resource-status">Available</span></div>
+  <a class="resource-row" download="" href="Docs/statistical-source.zip"><span class="resource-type">ZIP</span><span><strong>Source Code</strong><small>Compressed research source archive</small></span><span class="resource-arrow">↓</span></a>
+</div>
+</div></section>
+
 </main>
 <footer><div class="footer-content"><div class="footer-section"><h4>Researcher</h4><p>Deogracias Mufula<br/><a href="mailto:mfldeo001@myuct.ac.za">mfldeo001@myuct.ac.za</a></p></div><div class="footer-section"><h4>Supervisor</h4><p>Dr Jan Buys</p></div><div class="footer-section"><h4 class="footer-brand"><img src="Images/favicon.svg" alt="" aria-hidden="true"/> Project</h4><p><a href="index.html">DETECTGPT home</a><br/><a href="resources.html">Project resources</a></p></div></div><div class="footer-bottom"><p>DETECTGPT · Statistical Detection</p></div></footer>
 </body></html>
